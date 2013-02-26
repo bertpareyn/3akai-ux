@@ -19,7 +19,7 @@ casper.waitForSelector('a[href="/register"]', function() {
 
     this.test.assertExists('#topnavigation_left a[href="/register"]');
     this.click('#topnavigation_left a[href="/register"]');
-    takeScreenshot(true, function() {
+    //takeScreenshot(true, function() {
 
         /**
          * Fill out and submit the register form
@@ -37,14 +37,14 @@ casper.waitForSelector('a[href="/register"]', function() {
                 'password_repeat': 'testtest'
             }, false);
 
-            takeScreenshot(false, function() {
+            //takeScreenshot(false, function() {
                 casper.click('#register_create_account');
-                takeScreenshot(true, function() {
+               // takeScreenshot(true, function() {
                     casper.test.done();
-                });
-            });
+               // });
+            //});
         });
-    });
+    //});
 });
 
 // Run the whole test suite (all the above)
