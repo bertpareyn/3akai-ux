@@ -1,3 +1,4 @@
+casper.options.waitTimeout = 10000;
 // Set up test tenant
 casper.test.begin('Prepare environment for tests', function(test) {
 	casper.start('http://admin.oae.com', function() {
