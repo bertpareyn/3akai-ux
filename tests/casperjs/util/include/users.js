@@ -62,16 +62,18 @@ var userUtil = function() {
         casper.waitForSelector('#topnavigation-signin', function() {
             // Open sign in form
             casper.click('#topnavigation-signin');
+
             // Fill sign in form
             casper.fill('form#topnavigation-signin-form', {
                 'topnavigation-signin-username': username,
                 'topnavigation-signin-password': password
             }, false);
+
             // Do the login
             casper.click('#topnavigation-signin-button');
-        });
 
-        casper.waitForSelector('#me-clip-container h1', function() {
+        });
+        casper.waitForSelector('#me-clip-container', function() {
             casper.echo('Log in with user ' + username);
         });
     };
@@ -84,7 +86,7 @@ var userUtil = function() {
      */
     var doAdminLogIn = function(username, password) {
         casper.waitForSelector('#admin-login-form', function() {
-            casper.wait(2000, function() {
+            casper.wait(5000, function() {
                 // Fill sign in form
                 casper.fill('form#admin-login-form', {
                     'username': username,
@@ -104,7 +106,7 @@ var userUtil = function() {
      * Logs out the current user
      */
     var doLogOut = function() {
-        casper.then(function() {
+        casper.waitForSelector('#topnavigation-signout', function() {
             casper.echo('Log out');
             casper.waitForSelector('#topnavigation-signout', function() {
                 casper.click('#topnavigation-signout');

@@ -29,6 +29,7 @@ var contentUtil = function() {
                 });
             });
             casper.then(function() {
+<<<<<<< HEAD
                 casper.fill('#upload-dropzone form', {
                     'file': fileToUpload
                 }, false);
@@ -37,6 +38,19 @@ var contentUtil = function() {
                     contentUrl = casper.getElementAttribute('#oae-notification-container .alert h4 + a', 'href');
                     casper.echo('Created content item at ' + contentUrl);
                     callback(contentUrl);
+=======
+                casper.waitForSelector('#upload-dropzone', function() {
+                    casper.capture('screenshot.png');
+                    casper.fill('#upload-dropzone form', {
+                        'file': 'tests/casperjs/data/balloons.jpg'
+                    }, false);
+                    casper.click('button#upload-upload');
+                    casper.waitForSelector('#oae-notification-container .alert', function() {
+                        contentUrl = casper.getElementAttribute('#oae-notification-container .alert h4 + a', 'href');
+                        casper.echo('Created content item at ' + contentUrl);
+                        callback(contentUrl);
+                    });
+>>>>>>> editgroup.js editdiscussion.js register.js
                 });
             });
         });
