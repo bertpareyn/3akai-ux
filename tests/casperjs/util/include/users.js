@@ -86,7 +86,7 @@ var userUtil = function() {
      */
     var doAdminLogIn = function(username, password) {
         casper.waitForSelector('#admin-login-form', function() {
-            casper.wait(5000, function() {
+            casper.wait(6000, function() {
                 // Fill sign in form
                 casper.fill('form#admin-login-form', {
                     'username': username,

@@ -40,7 +40,6 @@ var contentUtil = function() {
                     callback(contentUrl);
 =======
                 casper.waitForSelector('#upload-dropzone', function() {
-                    casper.capture('screenshot.png');
                     casper.fill('#upload-dropzone form', {
                         'file': 'tests/casperjs/data/balloons.jpg'
                     }, false);
