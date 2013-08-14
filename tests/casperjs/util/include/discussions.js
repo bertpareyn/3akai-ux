@@ -56,18 +56,13 @@ var discussionUtil = function() {
                 casper.waitForSelector('.oae-trigger-creatediscussion', function() {
                     casper.click('.oae-trigger-creatediscussion');
                     casper.waitForSelector('#creatediscussion-create', function() {
-                        casper.then(function() {
-                            casper.fill('form#creatediscussion-form', {
-                                'creatediscussion-name': 'Discussion ' + rndString,
-                                'creatediscussion-topic': 'Talk about all the things!'
-                            }, false);
-                        });
-                        casper.then(function() {
-                            casper.click('#creatediscussion-create');
-                            casper.waitForSelector('.oae-clip-content', function() {
-                                casper.echo('created discussion \'Discussion ' + rndString + '\' in group with path \'' + groupUrl + '\'');
-                                });
-                            });
+                        casper.fill('form#creatediscussion-form', {
+                            'creatediscussion-name': 'Discussion ' + rndString,
+                            'creatediscussion-topic': 'Talk about all the things!'
+                        }, false);
+                        casper.click('#creatediscussion-create');
+                        casper.waitForSelector('.oae-clip-content', function() {
+                            casper.echo('created discussion \'Discussion ' + rndString + '\' in group with path \'' + groupUrl + '\'');
                         });
                     });
                 });
