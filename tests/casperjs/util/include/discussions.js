@@ -41,56 +41,6 @@ var discussionUtil = function() {
             callback(discussions);
         });
     };
-    /*
-    var createGroupDiscussion = function(groupname) {
-        casper.start('http://test.oae.com/me/discussions', function() {
-            var rndString = mainUtil().generateRandomString();
-            casper.waitForSelector('#lhnavigation-page', function() {
-                casper.echo('test');
-                casper.click('.oae-trigger-creatediscussion');
-                casper.waitForSelector('form#creatediscussion-form', function() {
-                    casper.captureSelector('discussions3.png','#creatediscussion-permissions');
-                    casper.echo('form');
-                    casper.fill('form#creatediscussion-form', {
-                        'creatediscussion-name': rndString,
-                        'creatediscussion-topic': 'Talk about all the things!'
-                    }, false);
-                    casper.click('#creatediscussion-change-permissions');
-                    casper.captureSelector('discussions5.png','#creatediscussion-change-permissions');
-                    //TOT HIER GAAT HET GOED, HET FORM WORDT INGEVULD
-                    //HIERNA WORDT OF DE NIET KNOP INGEDRUKT OF HET NIEUWE SCHERM NIET INGELADEN
-                    casper.wait(1000, function() {
-                        casper.capture('discussions4.png');
-                        casper.test.assertExists('#creatediscussion-permissions-container[style="display: none"]');
-                        casper.test.assertExists('#creatediscussion-permissions-container[style="display: block"]');
-                        casper.test.assertExists('#creatediscussion-permissions-container[display="none"]');
-                        casper.test.assertExists('#creatediscussion-permissions-container[display="block"]');
-                        casper.test.assertExists('#creatediscussion-permissions-container');
-                        casper.test.assertVisible('#creatediscussion-permissions-container');
-                        casper.test.assertNotVisible('#creatediscussion-permissions-container');
-                    });
-                    casper.waitUntilVisible('#creatediscussion-permissions-container', function() {
-                        casper.capture('discussions.png');
-                        casper.echo('list');
-                        casper.evaluate(function(groupname) {
-                            document.querySelector('#setpermissions-container .as-selections input').value = groupname;
-                        }, groupname);
-                        casper.capture('discussions2.png');
-                        casper.click('#setpermissions-container .as-selections input');
-                        casper.waitForSelector('.as-list li', function() {
-                            casper.echo('save');
-                            casper.click('.as-list li');
-                            casper.click('#setpermissions-savepermissions');
-                            casper.waitForSelector('#creatediscussion-create', function() {
-                                casper.echo('create');
-                                casper.click('#creatediscussion-create');
-                            });
-                        });
-                    });
-                });
-            });
-        });
-    };*/
 
 
     /**
