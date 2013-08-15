@@ -89,7 +89,7 @@ var groupUtil = function() {
                         casper.waitForSelector('#manageaccess-overview-save', function() {
                             // Save the user to the group
                             casper.click('#manageaccess-overview-save');
-                            casper.echo('Added user ' + username + ' to group as manager');
+                            casper.echo('Added user ' + username + ' to group as manager.');
                         });
                     });
                 });
@@ -106,16 +106,19 @@ var groupUtil = function() {
     var changeVisibility = function(type, group) {
         casper.thenOpen('http://test.oae.com'+group.profilePath, function() {
             openManageAccess();
-            casper.click('#manageaccess-change-visibility');
-            casper.waitForSelector('#manageaccess-visibility', function() {
-                if(type === 'private' || type === 'public' || type === 'loggedin') {
-                    casper.click('#oae-visibility-'+type);
-                } else {
-                    casper.click('#oae-visibility-public');
-                }
-                casper.click('#manageaccess-visibility-save');
-                casper.waitForSelector('#manageaccess-overview-save', function() {
-                    casper.click('#manageaccess-overview-save');
+            casper.waitForSelector('#manageaccess-change-visibility', function() {
+                casper.click('#manageaccess-change-visibility');
+                casper.waitForSelector('#manageaccess-visibility', function() {
+                    if(type === 'private' || type === 'public' || type === 'loggedin') {
+                        casper.click('#oae-visibility-'+type);
+                    } else {
+                        casper.click('#oae-visibility-public');
+                    }
+                    casper.click('#manageaccess-visibility-save');
+                    casper.waitForSelector('#manageaccess-overview-save', function() {
+                        casper.click('#manageaccess-overview-save');
+                        casper.echo('Changed visibility of ' + group.displayName + ' to ' + type + '.');
+                    });
                 });
             });
         });

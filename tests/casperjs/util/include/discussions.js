@@ -10,8 +10,9 @@ var discussionUtil = function() {
     /**
      * Creates a discussion
      *
-     * @param  {Function}     callback               Standard callback function
-     * @param  {Discussion}   callback.discussion    The created discussion object
+     * @param   {Int}           numToCreate             The number of discussions to create
+     * @param   {Function}      callback                Standard callback function
+     * @param   {Discussion}    callback.discussion     The created discussion object
      */
     var createDiscussion = function(numToCreate, callback) {
         var toCreate = numToCreate || 1;
@@ -29,10 +30,10 @@ var discussionUtil = function() {
 
             casper.then(function() {
                 if (data) {
-                    casper.echo('Created \'Discussion' + rndString + '\'.');
+                    casper.echo('Created \'Discussion ' + rndString + '\'.');
                     discussions.push(data);
                 } else {
-                    casper.echo('Could not create discussion \'Discussion' + rndString + '\'.', 'ERROR');
+                    casper.echo('Could not create discussion \'Discussion ' + rndString + '\'.', 'ERROR');
                 }
             });
         });
