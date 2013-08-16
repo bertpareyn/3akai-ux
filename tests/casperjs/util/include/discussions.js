@@ -50,6 +50,7 @@ var discussionUtil = function() {
      * @param   {String}    groupUrl    The group.profilePath of the group you want to add a discussion.
      */
     var createGroupDiscussion = function(groupUrl, callback) {
+        var discussionUrl = null;
         var rndString = mainUtil().generateRandomString();
         casper.thenOpen('http://test.oae.com' + groupUrl + '/discussions', function() {
             // Need to fix this, but it doesn't work without the wait, it wil timeout without it
@@ -64,20 +65,55 @@ var discussionUtil = function() {
                         casper.click('#creatediscussion-create');
                         casper.waitForSelector('.oae-clip-content', function() {
                             casper.echo('created discussion \'Discussion ' + rndString + '\' in group with path \'' + groupUrl + '\'');
+                            discussionUrl = casper.getCurrentUrl();
+                            callback(rndString, discussionUrl)
                         });
                     });
                 });
             });
         });
-                
-        casper.then(function() {
-            callback(rndString);
-        });
+    };
 
+    /**
+     * Post something to the discussion with this url
+     *
+     * @param   {String}    discussionUrl   The url of the discussion you want to post something to
+     * @param   {String}    comment         The comment you want to post
+     */
+    var postToDiscussionUrl = function(discussionUrl, comment) {
+        casper.thenOpen(discussionUrl, function() {
+            casper.waitForSelector('form.comments-new-comment-form', function() {
+                casper.fill('form.comments-new-comment-form', {
+                    'comments-new-comment': comment
+                });
+                casper.click('.comments-new-comment-form button[type="submit"]');
+                casper.echo('Posted \'' + comment + '\' to the discussion with url \'' + discussionUrl + '\'.');
+            });
+        });
+    };
+
+    /**
+     * Post something to the discussion
+     *
+     * @param   {Object}    discussion      The discussion you want to post something to
+     * @param   {String}    comment         The comment you want to post
+     */
+    var postToDiscussion = function(discussion, comment) {
+        casper.thenOpen('http://test.oae.com' + discussion.profilePath, function() {
+            casper.waitForSelector('form.comments-new-comment-form', function() {
+                casper.fill('form.comments-new-comment-form', {
+                    'comments-new-comment': comment
+                });
+                casper.click('.comments-new-comment-form button[type="submit"]');
+                casper.echo('Posted \'' + comment + '\' to the discussion \'' + discussion.displayName + '\'.');
+            });
+        });
     };
 
     return {
         'createDiscussion': createDiscussion,
-        'createGroupDiscussion': createGroupDiscussion
+        'createGroupDiscussion': createGroupDiscussion,
+        'postToDiscussionUrl': postToDiscussionUrl,
+        'postToDiscussion': postToDiscussion
     };
 };

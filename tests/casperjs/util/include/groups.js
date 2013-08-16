@@ -59,6 +59,18 @@ var groupUtil = function() {
     };
 
     /**
+     * Help function to open the edit group form
+     */
+    var openEditGroup = function() {
+        casper.waitForSelector('#group-clip-container .oae-clip-content > button', function() {
+            casper.click('#group-clip-container .oae-clip-content > button');
+            casper.waitForSelector('button.group-trigger-editgroup', function() {
+                casper.click('button.group-trigger-editgroup');
+            });
+        });
+    };
+
+    /**
      * Add the given user to the given group by using the manageaccess screen.
      *
      * @param   {String}    username    The name of the user you want to add to the group
@@ -124,10 +136,30 @@ var groupUtil = function() {
         });
     };
 
+    /**
+     * Update the group description
+     *
+     * @param   {Object}    group   The group you want to update the description from
+     */
+    var updateGroupDescription = function(group) {
+        casper.thenOpen('http://test.oae.com' + group.profilePath, function() {
+            openEditGroup();
+            casper.waitForSelector('#editgroup-modal', function() {
+                casper.fill('form#editgroup-form', {
+                    'editgroup-name': group.displayName,
+                    'editgroup-description': 'New description'
+                });
+                casper.click('#editgroup-modal button[type="submit"]');
+                casper.echo('Updated the group description of group \'' + group.displayName + '\' to \'New description\'.');
+            });
+        });
+    };
+
     return {
         'createGroup': createGroup,
         'createdGroups': createdGroups,
         'addUserToGroup': addUserToGroup,
-        'changeVisibility': changeVisibility
+        'changeVisibility': changeVisibility,
+        'updateGroupDescription': updateGroupDescription
     };
 };

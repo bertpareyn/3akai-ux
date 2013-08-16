@@ -29,7 +29,6 @@ var contentUtil = function() {
                 });
             });
             casper.then(function() {
-<<<<<<< HEAD
                 casper.fill('#upload-dropzone form', {
                     'file': fileToUpload
                 }, false);
@@ -38,18 +37,6 @@ var contentUtil = function() {
                     contentUrl = casper.getElementAttribute('#oae-notification-container .alert h4 + a', 'href');
                     casper.echo('Created content item at ' + contentUrl);
                     callback(contentUrl);
-=======
-                casper.waitForSelector('#upload-dropzone', function() {
-                    casper.fill('#upload-dropzone form', {
-                        'file': 'tests/casperjs/data/balloons.jpg'
-                    }, false);
-                    casper.click('button#upload-upload');
-                    casper.waitForSelector('#oae-notification-container .alert', function() {
-                        contentUrl = casper.getElementAttribute('#oae-notification-container .alert h4 + a', 'href');
-                        casper.echo('Created content item at ' + contentUrl);
-                        callback(contentUrl);
-                    });
->>>>>>> editgroup.js editdiscussion.js register.js
                 });
             });
         });
@@ -107,6 +94,57 @@ var contentUtil = function() {
                         callback();
                     });
                 });
+            });
+        });
+    };
+
+    /**
+     * Creates a file in the group through the UI and returns the URL to it
+     *
+     * @param  {Object}   group       Group object of the group you want to add the file to
+     * @param  {Function} callback    Standard callback function
+     */
+    var createGroupFile = function(group, callback) {
+        var contentUrl = null;
+
+        casper.thenOpen('http://test.oae.com' + group.profilePath, function() {
+            casper.waitForSelector('#group-clip-container .oae-clip-content > button', function() {
+                casper.click('#group-clip-container .oae-clip-content > button');
+                casper.click('.oae-trigger-upload');
+                casper.wait(1000, function() {
+                    casper.click('#group-clip-container .oae-clip-content > button');
+                });
+            });
+            casper.then(function() {
+                casper.waitForSelector('#upload-dropzone', function() {
+                    casper.fill('#upload-dropzone form', {
+                        'file': 'tests/casperjs/data/balloons.jpg'
+                    }, false);
+                    casper.click('button#upload-upload');
+                    casper.waitForSelector('#oae-notification-container .alert', function() {
+                        contentUrl = casper.getElementAttribute('#oae-notification-container .alert h4 + a', 'href');
+                        casper.echo('Created content item at ' + contentUrl);
+                        callback(contentUrl);
+                    });
+                });
+            });
+        });
+    };
+
+    /**
+     * Comment on a file
+     *
+     * @param   {String}    fileUrl     The url to the file that needs to be commented on
+     * @param   {String}    comment     The comment you want to place on the file
+     */
+    var commentOnFile = function(fileUrl, comment) {
+        casper.thenOpen('http://test.oae.com' + fileUrl, function() {
+            casper.waitForSelector('form.comments-new-comment-form', function() {
+                casper.fill('form.comments-new-comment-form', {
+                    'comments-new-comment': comment
+                });
+                casper.click('.comments-new-comment-form button[type="submit"]');
+                casper.echo('Made comment \'' + comment + '\' on File with url \'' + fileUrl + '\'.');
             });
         });
     };
