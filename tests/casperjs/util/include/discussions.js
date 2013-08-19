@@ -52,10 +52,9 @@ var discussionUtil = function() {
     var createGroupDiscussion = function(group, callback) {
         var discussionUrl = null;
         var rndString = mainUtil().generateRandomString();
-        casper.thenOpen('http://test.oae.com' + group.profilePath + '/discussions', function() {
-            //casper.click('...');
-            // Need to fix this, but it doesn't work without the wait, it wil timeout without it
-            casper.wait(6000,function() {
+        casper.thenOpen('http://test.oae.com' + group.profilePath , function() {
+            casper.waitForSelector('#lhnavigation-navigation', function() {
+                casper.click('#lhnavigation-navigation a[href="' + group.profilePath + '/discussions"]');
                 casper.waitForSelector('.oae-trigger-creatediscussion', function() {
                     casper.click('.oae-trigger-creatediscussion');
                     casper.waitForSelector('#creatediscussion-create', function() {
@@ -65,7 +64,9 @@ var discussionUtil = function() {
                         }, false);
                         // Wait a bit for the button to be abled so you can click on it
                         // Else the button will be disabled when you try to click and the discussion will not be created
-                        casper.wait(2000, function() {casper.click('#creatediscussion-create');});
+                        casper.wait(2000, function() {
+                            casper.click('#creatediscussion-create');
+                        });
                         casper.waitForSelector('.oae-clip-content', function() {
                             casper.echo('created discussion \'Discussion ' + rndString + '\' in group \'' + group.displayName + '\'');
                             discussionUrl = casper.getCurrentUrl();
