@@ -47,14 +47,15 @@ var discussionUtil = function() {
     /**
      * Creates a discussion in the given groupUrl
      *
-     * @param   {String}    groupUrl    The group.profilePath of the group you want to add a discussion.
+     * @param   {Object}    group   The group object you want to add a discussion to.
      */
-    var createGroupDiscussion = function(groupUrl, callback) {
+    var createGroupDiscussion = function(group, callback) {
         var discussionUrl = null;
         var rndString = mainUtil().generateRandomString();
-        casper.thenOpen('http://test.oae.com' + groupUrl + '/discussions', function() {
+        casper.thenOpen('http://test.oae.com' + group.profilePath + '/discussions', function() {
+            //casper.click('...');
             // Need to fix this, but it doesn't work without the wait, it wil timeout without it
-            casper.wait(5000,function() {
+            casper.wait(6000,function() {
                 casper.waitForSelector('.oae-trigger-creatediscussion', function() {
                     casper.click('.oae-trigger-creatediscussion');
                     casper.waitForSelector('#creatediscussion-create', function() {
@@ -62,9 +63,11 @@ var discussionUtil = function() {
                             'creatediscussion-name': 'Discussion ' + rndString,
                             'creatediscussion-topic': 'Talk about all the things!'
                         }, false);
-                        casper.click('#creatediscussion-create');
+                        // Wait a bit for the button to be abled so you can click on it
+                        // Else the button will be disabled when you try to click and the discussion will not be created
+                        casper.wait(2000, function() {casper.click('#creatediscussion-create');});
                         casper.waitForSelector('.oae-clip-content', function() {
-                            casper.echo('created discussion \'Discussion ' + rndString + '\' in group with path \'' + groupUrl + '\'');
+                            casper.echo('created discussion \'Discussion ' + rndString + '\' in group \'' + group.displayName + '\'');
                             discussionUrl = casper.getCurrentUrl();
                             callback(rndString, discussionUrl)
                         });
@@ -86,7 +89,9 @@ var discussionUtil = function() {
                 casper.fill('form.comments-new-comment-form', {
                     'comments-new-comment': comment
                 });
-                casper.click('.comments-new-comment-form button[type="submit"]');
+                casper.wait(2000, function() {
+                    casper.click('.comments-new-comment-form button[type="submit"]');
+                });
                 casper.echo('Posted \'' + comment + '\' to the discussion with url \'' + discussionUrl + '\'.');
             });
         });
@@ -104,7 +109,9 @@ var discussionUtil = function() {
                 casper.fill('form.comments-new-comment-form', {
                     'comments-new-comment': comment
                 });
-                casper.click('.comments-new-comment-form button[type="submit"]');
+                casper.wait(2000, function() {
+                    casper.click('.comments-new-comment-form button[type="submit"]');
+                });
                 casper.echo('Posted \'' + comment + '\' to the discussion \'' + discussion.displayName + '\'.');
             });
         });

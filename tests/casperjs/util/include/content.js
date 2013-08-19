@@ -119,8 +119,12 @@ var contentUtil = function() {
                 casper.waitForSelector('#upload-dropzone', function() {
                     casper.fill('#upload-dropzone form', {
                         'file': 'tests/casperjs/data/balloons.jpg'
-                    }, false);
-                    casper.click('button#upload-upload');
+                     }, false);
+                    // Wait a bit for the button to be abled so you can click on it
+                    // Else the button will be disabled when you try to click and the content will not be created
+                    casper.wait(2000,function(){
+                        casper.click('button#upload-upload');
+                    });
                     casper.waitForSelector('#oae-notification-container .alert', function() {
                         contentUrl = casper.getElementAttribute('#oae-notification-container .alert h4 + a', 'href');
                         casper.echo('Created content item at ' + contentUrl);
@@ -143,7 +147,9 @@ var contentUtil = function() {
                 casper.fill('form.comments-new-comment-form', {
                     'comments-new-comment': comment
                 });
-                casper.click('.comments-new-comment-form button[type="submit"]');
+                casper.wait(2000, function() {
+                    casper.click('.comments-new-comment-form button[type="submit"]');
+                });
                 casper.echo('Made comment \'' + comment + '\' on File with url \'' + fileUrl + '\'.');
             });
         });
