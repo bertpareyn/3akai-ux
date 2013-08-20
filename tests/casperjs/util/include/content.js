@@ -119,7 +119,7 @@ var contentUtil = function() {
                 casper.waitForSelector('#upload-dropzone', function() {
                     casper.fill('#upload-dropzone form', {
                         'file': 'tests/casperjs/data/balloons.jpg'
-                     }, false);
+                }, false);
                     // Wait a bit for the button to be abled so you can click on it
                     // Else the button will be disabled when you try to click and the content will not be created
                     casper.wait(2000,function(){

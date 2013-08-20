@@ -43,7 +43,6 @@ var discussionUtil = function() {
         });
     };
 
-
     /**
      * Creates a discussion in the given groupUrl
      *
@@ -68,32 +67,12 @@ var discussionUtil = function() {
                             casper.click('#creatediscussion-create');
                         });
                         casper.waitForSelector('.oae-clip-content', function() {
-                            casper.echo('created discussion \'Discussion ' + rndString + '\' in group \'' + group.displayName + '\'');
+                            casper.echo('Created \'Discussion ' + rndString + '\' in group \'' + group.displayName + '\'.');
                             discussionUrl = casper.getCurrentUrl();
                             callback(rndString, discussionUrl)
                         });
                     });
                 });
-            });
-        });
-    };
-
-    /**
-     * Post something to the discussion with this url
-     *
-     * @param   {String}    discussionUrl   The url of the discussion you want to post something to
-     * @param   {String}    comment         The comment you want to post
-     */
-    var postToDiscussionUrl = function(discussionUrl, comment) {
-        casper.thenOpen(discussionUrl, function() {
-            casper.waitForSelector('form.comments-new-comment-form', function() {
-                casper.fill('form.comments-new-comment-form', {
-                    'comments-new-comment': comment
-                });
-                casper.wait(2000, function() {
-                    casper.click('.comments-new-comment-form button[type="submit"]');
-                });
-                casper.echo('Posted \'' + comment + '\' to the discussion with url \'' + discussionUrl + '\'.');
             });
         });
     };
@@ -121,7 +100,6 @@ var discussionUtil = function() {
     return {
         'createDiscussion': createDiscussion,
         'createGroupDiscussion': createGroupDiscussion,
-        'postToDiscussionUrl': postToDiscussionUrl,
         'postToDiscussion': postToDiscussion
     };
 };
