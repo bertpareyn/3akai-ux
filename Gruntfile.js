@@ -172,8 +172,7 @@ module.exports = function(grunt) {
                         'tests/casperjs/util/include/discussions.js',
                         'tests/casperjs/util/include/groups.js',
                         'tests/casperjs/util/include/users.js',
-                        'tests/casperjs/util/include/util.js',
-                        'tests/casperjs/util/include/links.js'
+                        'tests/casperjs/util/include/util.js'
                     ],
                     // Adds tests from specified files before running the test suite
                     pre: ['tests/casperjs/util/prep.js'],
