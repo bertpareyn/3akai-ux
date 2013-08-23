@@ -59,18 +59,6 @@ var groupUtil = function() {
     };
 
     /**
-     * Help function to open the edit group form
-     */
-    var openEditGroup = function() {
-        casper.waitForSelector('#group-clip-container .oae-clip-content > button', function() {
-            casper.click('#group-clip-container .oae-clip-content > button');
-            casper.waitForSelector('button.group-trigger-editgroup', function() {
-                casper.click('button.group-trigger-editgroup');
-            });
-        });
-    };
-
-    /**
      * Add the given user to the given group by using the manageaccess screen.
      *
      * @param   {String}    username    The name of the user you want to add to the group
@@ -116,24 +104,35 @@ var groupUtil = function() {
     * @param   {Object}    group   The group you want to change the visibility from
     */
     var changeVisibility = function(type, group) {
-        casper.thenOpen('http://test.oae.com'+group.profilePath, function() {
-            openManageAccess();
-            casper.waitForSelector('#manageaccess-change-visibility', function() {
-                casper.click('#manageaccess-change-visibility');
-                casper.waitForSelector('#manageaccess-visibility', function() {
-                    if(type === 'private' || type === 'public' || type === 'loggedin') {
-                        casper.click('#oae-visibility-'+type);
-                    } else {
-                        casper.click('#oae-visibility-public');
-                    }
-                    casper.click('#manageaccess-visibility-save');
-                    casper.waitForSelector('#manageaccess-overview-save', function() {
-                        casper.click('#manageaccess-overview-save');
-                        casper.echo('Changed visibility of ' + group.displayName + ' to ' + type + '.');
-                    });
-                });
+        if(type === 'private' || type === 'public' || type === 'loggedin') {
+            data = casper.evaluate(function(type, group) {
+                return JSON.parse(__utils__.sendAJAX('/api/group/' + group.id, 'POST', {
+                    'visibility': type
+                }, false));
+            }, type, group);
+
+            casper.then(function() {
+                if (data) {
+                    casper.echo('Changed the visibility of the group \'' + group.displayName + '\' to \'' + type + '\'.');
+                } else {
+                    casper.echo('Could not change the visibility of the group \'' + group.displayName + '\'.');
+                }
             });
-        });
+        } else {
+            data = casper.evaluate(function(type, group) {
+                return JSON.parse(__utils__.sendAJAX('/api/group/' + group.id, 'POST', {
+                    'visibility': 'public'
+                }, false));
+            }, type, group);
+
+            casper.then(function() {
+                if (data) {
+                    casper.echo('Changed the visibility of the group \'' + group.displayName + '\' to \'public\'.');
+                } else {
+                    casper.echo('Could not change the visibility of the group \'' + group.displayName + '\'.');
+                }
+            });
+        }
     };
 
     /**
@@ -142,16 +141,18 @@ var groupUtil = function() {
      * @param   {Object}    group   The group you want to update the description from
      */
     var updateGroupDescription = function(group) {
-        casper.thenOpen('http://test.oae.com' + group.profilePath, function() {
-            openEditGroup();
-            casper.waitForSelector('#editgroup-modal', function() {
-                casper.fill('form#editgroup-form', {
-                    'editgroup-name': group.displayName,
-                    'editgroup-description': 'New description'
-                });
-                casper.click('#editgroup-modal button[type="submit"]');
-                casper.echo('Updated the group description of group \'' + group.displayName + '\' to \'New description\'.');
-            });
+        data = casper.evaluate(function(group) {
+            return JSON.parse(__utils__.sendAJAX('/api/group/' + group.id, 'POST', {
+                'description': 'New description'
+            }, false));
+        }, group);
+
+        casper.then(function() {
+            if (data) {
+                casper.echo('Changed the description of the group \'' + group.displayName + '\' to \'New description\'');
+            } else {
+                casper.echo('Could not change the description of the group \'' + group.displayName + '\'.');
+            }
         });
     };
 

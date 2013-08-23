@@ -17,7 +17,7 @@ var contentUtil = function() {
      * @param  {Function}   callback   Standard callback function
      */
     var createFile = function(file, callback) {
-        var fileToUpload = file || 'tests/casperjs/data/balloons.jpg';
+        var fileToUpload = 'tests/casperjs/data/balloons.jpg';
         var contentUrl = null;
 
         casper.thenOpen('http://test.oae.com/me', function() {
@@ -29,14 +29,17 @@ var contentUtil = function() {
                 });
             });
             casper.then(function() {
-                casper.fill('#upload-dropzone form', {
-                    'file': fileToUpload
-                }, false);
-                casper.click('button#upload-upload');
-                casper.waitForSelector('#oae-notification-container .alert', function() {
-                    contentUrl = casper.getElementAttribute('#oae-notification-container .alert h4 + a', 'href');
-                    casper.echo('Created content item at ' + contentUrl);
-                    callback(contentUrl);
+                casper.waitForSelector('#upload-dropzone', function(){
+                    casper.fill('#upload-dropzone form', {
+                        'file': fileToUpload
+                    }, false);
+                    casper.click('button#upload-upload');
+                    casper.waitForSelector('#oae-notification-container .alert', function() {
+                        contentUrl = casper.getElementAttribute('#oae-notification-container .alert h4 + a', 'href');
+                        casper.echo('Created content item at ' + contentUrl);
+                        casper.echo(contentUrl);
+                        callback(contentUrl);
+                    });
                 });
             });
         });
@@ -138,10 +141,10 @@ var contentUtil = function() {
     /**
      * Comment on a file
      *
-     * @param   {String}    fileUrl     The url to the file that needs to be commented on
+     * @param   {String}    fileUrl     The file object that needs to be commented on
      * @param   {String}    comment     The comment you want to place on the file
      */
-    var commentOnFile = function(fileUrl, comment) {
+    var commentOnFile = function(file, comment) {
         casper.thenOpen('http://test.oae.com' + fileUrl, function() {
             casper.waitForSelector('form.comments-new-comment-form', function() {
                 casper.fill('form.comments-new-comment-form', {
@@ -153,11 +156,27 @@ var contentUtil = function() {
                 casper.echo('Made comment \'' + comment + '\' on File with url \'' + fileUrl + '\'.');
             });
         });
+    /*
+        data = casper.evaluate(function(file, comment) {
+            return JSON.parse(__utils__.sendAJAX('/api/content/' + file.id + '/messages', 'POST', {
+                'body': comment
+            }, false));
+        }, file, comment);
+
+        casper.then(function() {
+            if (data) {
+                casper.echo('Created comment \'' + comment + '\' on file \'' + file.displayName + '\'.');
+            } else {
+                casper.echo('Could not create comment \'' + comment + '\' on file \'' + file.displayName + '\'.');
+            }
+        });*/
     };
 
     return {
         'createFile': createFile,
         'createLink': createLink,
-        'createRevision': createRevision
+        'createRevision': createRevision,
+        'createGroupFile': createGroupFile,
+        'commentOnFile': commentOnFile
     };
 };

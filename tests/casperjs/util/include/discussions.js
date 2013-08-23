@@ -49,31 +49,28 @@ var discussionUtil = function() {
      * @param   {Object}    group   The group object you want to add a discussion to.
      */
     var createGroupDiscussion = function(group, callback) {
-        var discussionUrl = null;
         var rndString = mainUtil().generateRandomString();
-        casper.thenOpen('http://test.oae.com' + group.profilePath , function() {
-            casper.waitForSelector('#lhnavigation-navigation', function() {
-                casper.click('#lhnavigation-navigation a[href="' + group.profilePath + '/discussions"]');
-                casper.waitForSelector('.oae-trigger-creatediscussion', function() {
-                    casper.click('.oae-trigger-creatediscussion');
-                    casper.waitForSelector('#creatediscussion-create', function() {
-                        casper.fill('form#creatediscussion-form', {
-                            'creatediscussion-name': 'Discussion ' + rndString,
-                            'creatediscussion-topic': 'Talk about all the things!'
-                        }, false);
-                        // Wait a bit for the button to be abled so you can click on it
-                        // Else the button will be disabled when you try to click and the discussion will not be created
-                        casper.wait(2000, function() {
-                            casper.click('#creatediscussion-create');
-                        });
-                        casper.waitForSelector('.oae-clip-content', function() {
-                            casper.echo('Created \'Discussion ' + rndString + '\' in group \'' + group.displayName + '\'.');
-                            discussionUrl = casper.getCurrentUrl();
-                            callback(rndString, discussionUrl)
-                        });
-                    });
-                });
-            });
+        var discussion = null;
+        data = casper.evaluate(function(group, rndString) {
+            return JSON.parse(__utils__.sendAJAX('/api/discussion/create', 'POST', {
+                'displayName': 'Discussion ' + rndString,
+                'description': 'Talk about all the things!',
+                'visibility': 'public',
+                'members': group.id
+            }, false));
+        }, group, rndString);
+
+        casper.then(function() {
+            if (data) {
+                casper.echo('Created \'Discussion ' + rndString + '\'in group \'' + group.displayName + '\'.');
+                discussion = data;
+            } else {
+                casper.echo('Could not create discussion \'Discussion ' + rndString + '\' in group \'' + group.displayName + '\'.', 'ERROR');
+            }
+        });
+
+        casper.then(function() {
+            callback(discussion);
         });
     };
 
@@ -84,16 +81,18 @@ var discussionUtil = function() {
      * @param   {String}    comment         The comment you want to post
      */
     var postToDiscussion = function(discussion, comment) {
-        casper.thenOpen('http://test.oae.com' + discussion.profilePath, function() {
-            casper.waitForSelector('form.comments-new-comment-form', function() {
-                casper.fill('form.comments-new-comment-form', {
-                    'comments-new-comment': comment
-                });
-                casper.wait(2000, function() {
-                    casper.click('.comments-new-comment-form button[type="submit"]');
-                });
-                casper.echo('Posted \'' + comment + '\' to the discussion \'' + discussion.displayName + '\'.');
-            });
+        data = casper.evaluate(function(discussion, comment) {
+            return JSON.parse(__utils__.sendAJAX('/api/discussion/' + discussion.id + '/messages', 'POST', {
+                'body': comment
+            }, false));
+        }, discussion, comment);
+
+        casper.then(function() {
+            if (data) {
+                casper.echo('Created post \'' + comment + '\' to discussion \'' + discussion.displayName + '\'.');
+            } else {
+                casper.echo('Could not create post \'' + comment + '\' to discussion \'' + discussion.displayName + '\'.');
+            }
         });
     };
 
