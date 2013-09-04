@@ -1,10 +1,10 @@
 /*!
- * Copyright 2013 Sakai Foundation (SF) Licensed under the
+ * Copyright 2013 Apereo Foundation (AF) Licensed under the
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
  *
- *     http://www.osedu.org/licenses/ECL-2.0
+ *     http://opensource.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an "AS IS"
@@ -18,42 +18,49 @@
  ** LESS Mixins **
  *****************/
 
-.background-image-with-gradient(@image, @gradient1, @gradient2) {
+.background-image-with-gradient(@image, @gradient1, @gradient2, @skipIE:false) {
+    background-color: mix(@gradient1, @gradient2, 50%);
     background-image: url(@image) @gradient1;
     background-image: url(@image), -moz-linear-gradient(top, @gradient1 0%, @gradient2 100%);
     background-image: url(@image), -webkit-linear-gradient(top, @gradient1 0%, @gradient2 100%);
     background-image: url(@image), linear-gradient(to bottom, @gradient1 0%, @gradient2 100%);
-
-    /* IE9 */
-    @iegradient1: argb(@gradient1);
-    @iegradient2: argb(@gradient2);
-    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=@iegradient1, endColorstr=@iegradient2);
 }
 
-.background-gradient-two(@gradient1, @gradient2, @gradient1start:0%, @gradient2start:100%) {
-    background: @gradient1;
+/* IE9 */
+.background-image-with-gradient(@image, @gradient1, @gradient2, @skipIE:false) when not (@skipIE) {
+    @iegradient1: argb(@gradient1);
+    @iegradient2: argb(@gradient2);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=@iegradient1, endColorstr=@iegradient2);
+}
+
+.background-gradient-two(@gradient1, @gradient2, @gradient1start:0%, @gradient2start:100%, @skipIE: false) {
+    background-color: mix(@gradient1, @gradient2, 50%);
     background-image: linear-gradient(to bottom, @gradient1 @gradient1start, @gradient2 @gradient2start);
     background-image: -o-linear-gradient(top, @gradient1 @gradient1start, @gradient2 @gradient2start);
     background-image: -moz-linear-gradient(top, @gradient1 @gradient1start, @gradient2 @gradient2start);
     background-image: -webkit-linear-gradient(top, @gradient1 @gradient1start, @gradient2 @gradient2start);
-
-    /* IE9 */
-    @iegradient1: argb(@gradient1);
-    @iegradient2: argb(@gradient2);
-    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=@iegradient1, endColorstr=@iegradient2);
 }
 
-.background-gradient-three(@gradient1, @gradient2, @gradient3, @gradient1start:0%, @gradient2start:50%, @gradient3start:100%) {
-    background: @gradient1;
+/* IE9 */
+.background-gradient-two(@gradient1, @gradient2, @gradient1start:0%, @gradient2start:100%, @skipIE: false) when not (@skipIE) {
+    @iegradient1: argb(@gradient1);
+    @iegradient2: argb(@gradient2);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=@iegradient1, endColorstr=@iegradient2);
+}
+
+.background-gradient-three(@gradient1, @gradient2, @gradient3, @gradient1start:0%, @gradient2start:50%, @gradient3start:100%, @skipIE:false) {
+    background-color: mix(@gradient1, @gradient3, 50%);
     background-image: linear-gradient(to bottom, @gradient1 @gradient1start, @gradient2 @gradient2start, @gradient3 @gradient3start);
     background-image: -o-linear-gradient(top, @gradient1 @gradient1start, @gradient2 @gradient2start, @gradient3 @gradient3start);
     background-image: -moz-linear-gradient(top, @gradient1 @gradient1start, @gradient2 @gradient2start, @gradient3 @gradient3start);
     background-image: -webkit-linear-gradient(top, @gradient1 @gradient1start, @gradient2 @gradient2start, @gradient3 @gradient3start);
+}
 
-    /* IE9 */
+/* IE9 */
+.background-gradient-three(@gradient1, @gradient2, @gradient3, @gradient1start:0%, @gradient2start:50%, @gradient3start:100%, @skipIE:false) when not (@skipIE) {
     @iegradient1: argb(@gradient1);
     @iegradient3: argb(@gradient3);
-    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=@iegradient1, endColorstr=@iegradient3);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr=@iegradient1, endColorstr=@iegradient3);
 }
 
 
@@ -406,7 +413,9 @@ ul.as-selections.as-selections-focus {
 @modal-title-color: #777;
 
 .modal, .dropdown-menu, .popover {
-    .background-gradient-two(@modal-gradient1-color, @modal-gradient2-color);
+    /* Don't render the background gradient in IE, as the overflow hidden caused by it will
+       result in autosuggest results being cut off. https://github.com/oaeproject/3akai-ux/pull/2909 */
+    .background-gradient-two(@modal-gradient1-color, @modal-gradient2-color, @skipIE:true);
 }
 
 .popover.top .arrow:after,
@@ -694,7 +703,6 @@ ul.as-selections li.as-selection-item.as-ghost-item a.as-ghost-add i:hover {
 div.oae-thumbnail {
     .background-gradient-two(@thumbnail-gradient1-color, @thumbnail-gradient2-color, 47%, 74%);
 }
-
 
 /*********************************
  ** @section  Visibility toggle **

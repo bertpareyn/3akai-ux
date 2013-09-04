@@ -1,10 +1,10 @@
 /*!
- * Copyright 2013 Sakai Foundation (SF) Licensed under the
+ * Copyright 2013 Apereo Foundation (AF) Licensed under the
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
  *
- *     http://www.osedu.org/licenses/ECL-2.0
+ *     http://opensource.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an "AS IS"
@@ -94,8 +94,14 @@ define(['jquery'], function ($) {
         });
 
         /**
-         * Gets the selected list items in the current list and send them out through an `oae.list.sendSelection` event
+         * The `oae.list.getSelection` or `oae.list.getSelection.<widgetname>` event can be sent by widgets
+         * to get hold of the selected list items in the current list. In the first case, an
+         * `oae.list.sendSelection` event will be sent out as a broadcast to all widgets listening
+         * for the event. In the second case, an `oae.list.sendSelection.<widgetname>` event
+         * will be sent out and will only be caught by that particular widget.
          *
+         * @param  {Object}       ev                                          jQuery event
+         * @param  {String}       [widgetId]                                  An optional widget ID. If an ID is specified an event will be triggered specifically for this widget.
          * @return {Object}       selectedItems                               Object containing the selected items
          * @return {Object[]}     selectedItems.results                       Array of objects representing the selected list items
          * @return {String}       selectedItems.results[i].id                 Resource id of the selected list item
@@ -103,7 +109,7 @@ define(['jquery'], function ($) {
          * @return {String}       selectedItems.results[i].resourceType       Resource type of the selected list item (group, user, content, etc.)
          * @return {String}       [selectedItems.results[i].thumbnailUrl]     URL to the thumbnail image of the selected list item
          */
-        $(document).on('oae.list.getSelection', function() {
+        $(document).on('oae.list.getSelection', function(ev, widgetId) {
             var selectedItems = {
                 'results': []
             };
@@ -132,7 +138,12 @@ define(['jquery'], function ($) {
             });
 
             // Respond to the request event by sending the list of selected items
-            $(document).trigger('oae.list.sendSelection', selectedItems);
+            if (widgetId) {
+                $(document).trigger('oae.list.sendSelection.' + widgetId, selectedItems);
+            } else {
+                $(document).trigger('oae.list.sendSelection', selectedItems);
+            }
+
         });
 
     })();

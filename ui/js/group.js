@@ -1,10 +1,10 @@
 /*!
- * Copyright 2013 Sakai Foundation (SF) Licensed under the
+ * Copyright 2013 Apereo Foundation (AF) Licensed under the
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
  *
- *     http://www.osedu.org/licenses/ECL-2.0
+ *     http://opensource.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an "AS IS"
@@ -48,10 +48,16 @@ require(['jquery', 'oae.core'], function($, oae) {
             oae.api.util.setBrowserTitle(groupProfile.displayName);
             // Render the entity information
             setUpClip();
-            // Render the navigation
-            setUpNavigation();
             // Set up the context event exchange
             setUpContext();
+
+            // When the current user is not a member and the group is private and joinable, we show the join screen
+            if (!groupProfile.isMember && groupProfile.visibility === 'private' && groupProfile.canJoin) {
+                $('#group-join-view').show();
+            } else {
+                // Render the navigation
+                setUpNavigation();
+            }
         });
     };
 
@@ -85,7 +91,7 @@ require(['jquery', 'oae.core'], function($, oae) {
         if (groupProfile.isManager) {
             $('#group-manager-actions').show();
         // Show the join clip to non-members when the group is joinable
-        } else if (!groupProfile.isMember && groupProfile.joinable === 'yes') {
+        } else if (!groupProfile.isMember && groupProfile.canJoin) {
             $('#group-join-actions').show();
         }
     };
@@ -95,8 +101,10 @@ require(['jquery', 'oae.core'], function($, oae) {
      */
     var setUpNavigation = function() {
         // Structure that will be used to construct the left hand navigation
-        var lhNavigation = [
-            {
+        var lhNavigation = [];
+        // Only show the recent activity to group members
+        if (groupProfile.isMember) {
+            lhNavigation.push({
                 'id': 'activity',
                 'title': oae.api.i18n.translate('__MSG__RECENT_ACTIVITY__'),
                 'icon': 'icon-dashboard',
@@ -114,7 +122,9 @@ require(['jquery', 'oae.core'], function($, oae) {
                         ]
                     }
                 ]
-            },
+            });
+        }
+        lhNavigation.push(
             {
                 'id': 'library',
                 'title': oae.api.i18n.translate('__MSG__LIBRARY__'),
@@ -172,26 +182,13 @@ require(['jquery', 'oae.core'], function($, oae) {
                     }
                 ]
             }
-        ];
+        );
+
         $(window).trigger('oae.trigger.lhnavigation', [lhNavigation, baseUrl]);
         $(window).on('oae.ready.lhnavigation', function() {
             $(window).trigger('oae.trigger.lhnavigation', [lhNavigation, baseUrl]);
         });
     };
-
-
-    //////////////////////////
-    // CHANGE GROUP PICTURE //
-    //////////////////////////
-
-    /**
-     * Re-render the group's clip when a new profile picture has been uploaded. The updated
-     * group profile will be passed into the event
-     */
-    $(document).on('oae.changepic.finished', function(ev, data) {
-        groupProfile = data;
-        setUpClip();
-    });
 
 
     ///////////////////
@@ -227,7 +224,7 @@ require(['jquery', 'oae.core'], function($, oae) {
             },
             'api': {
                 'getMembersURL': '/api/group/' + groupProfile.id + '/members',
-                'setMembers': oae.api.group.setGroupMembers,
+                'setMembers': oae.api.group.updateMembers,
                 'setVisibility': oae.api.group.updateGroup
             }
         };
@@ -260,9 +257,13 @@ require(['jquery', 'oae.core'], function($, oae) {
     ////////////////
 
     /**
-     * Join the group when the join button is clicked
+     * Join the current group.
+     * If successful, a notification will be displayed and the page will be reloaded after 2 seconds.
      */
-    $('#group-join-actions-join button').on('click', function() {
+    $('.group-join').on('click', function() {
+        // Disable the join buttons
+        $('.group-join').prop('disabled', true);
+
         // Join the group
         oae.api.group.joinGroup(groupProfile.id, function(err) {
             if (!err) {
@@ -283,6 +284,9 @@ require(['jquery', 'oae.core'], function($, oae) {
                     oae.api.i18n.translate('__MSG__GROUP_NOT_JOINED__'),
                     'error'
                 );
+
+                // Re-enable the join buttons.
+                $('.group-join').prop('disabled', false);
             }
         });
     });
@@ -293,7 +297,7 @@ require(['jquery', 'oae.core'], function($, oae) {
     ////////////////
 
     $(document).on('oae.editgroup.done', function(ev, data) {
-        // TODO: Remove this once https://github.com/sakaiproject/Hilary/issues/519 is fixed
+        // TODO: Remove this once https://github.com/oaeproject/Hilary/issues/537 is fixed
         data.isManager = groupProfile.isManager;
         data.isMember = groupProfile.isMember;
 

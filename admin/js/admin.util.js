@@ -1,10 +1,10 @@
 /*!
- * Copyright 2013 Sakai Foundation (SF) Licensed under the
+ * Copyright 2013 Apereo Foundation (AF) Licensed under the
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
  *
- *     http://www.osedu.org/licenses/ECL-2.0
+ *     http://opensource.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an "AS IS"
@@ -14,6 +14,13 @@
  */
 
 define(['exports', 'jquery', 'oae.core'], function(exports, $, oae) {
+
+    /**
+     * Toggles a container to show or hide
+     */
+    var toggleContainer = exports.toggleContainer = function() {
+        $(this).next().toggle(400);
+    };
 
     /**
      * Shows a confirmation dialog to the user using predefined data
@@ -34,9 +41,11 @@ define(['exports', 'jquery', 'oae.core'], function(exports, $, oae) {
      *
      * @param {Object}  data    Data object used to render the modal dialog. All required elements are shown above in 'usage' and should be provided
      */
-    exports.showConfirmationModal = function(data) {
+    var showConfirmationModal = exports.showConfirmationModal = function(data) {
         oae.api.util.template().render($('#admin-confirmation-template'), {'modal': data}, $('#admin-confirmation-container'));
-        $('#' + data.id).modal();
+        $('#' + data.id).modal({
+            'backdrop': 'static'
+        });
         $('#' + data.id + '-confirm', $('#' + data.id)).click(data.confirmed);
     };
 

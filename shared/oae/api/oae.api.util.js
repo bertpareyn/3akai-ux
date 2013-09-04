@@ -1,10 +1,10 @@
 /*!
- * Copyright 2013 Sakai Foundation (SF) Licensed under the
+ * Copyright 2013 Apereo Foundation (AF) Licensed under the
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
  *
- *     http://www.osedu.org/licenses/ECL-2.0
+ *     http://opensource.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an "AS IS"
@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpath', 'jquery.autosuggest'], function(exports, require, $, _) {
+define(['exports', 'require', 'jquery', 'underscore', 'oae.api.config', 'jquery.validate', 'trimpath', 'jquery.autosuggest'], function(exports, require, $, _, configAPI) {
 
     /**
      * Initialize all utility functionality.
@@ -66,9 +66,21 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
     };
 
     /**
+     * Determine whether or not HTML content consists of solely non-textual elements such as white-spaces,
+     * line-breaks, empty elements, etc...
+     *
+     * @param  {String}     html    The HTML content to test for the existence of textual elements
+     * @return {Boolean}            `true` if the HTML content is blank, `false` otherwise
+     */
+    var isBlank = exports.isBlank = function(html) {
+        var txt = $('<div>').html(html).text();
+        return $.trim(txt) ? false : true;
+    };
+
+    /**
      * Change the browser title for a particular page. The browser's title has the following structure
      *
-     * Sakai OAE - Sakai Doc 1 [- Page 1]
+     * Open Academic Environment - Document 1 [- Page 1]
      *
      * Where the first part will be fixed.
      *
@@ -85,7 +97,7 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
             title = [title];
         }
         // Render the page title with the following format
-        //   `Sakai OAE - Fragment 1 - Fragment 2`
+        //   `Open Academic Environment - Fragment 1 - Fragment 2`
         title.splice(0, 0, '__MSG__TITLE_PREFIX__');
         document.title = require('oae.api.i18n').translate(title.join(' - '));
     };
@@ -129,7 +141,7 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
          */
         var init = function(callback) {
             // Load the activity summary and lists macros through the RequireJS Text plugin
-            require(['text!/ui/macros/activity.html', 'text!/ui/macros/list.html'], function(listMacro, activityMacro) {
+            require(['text!/shared/oae/macros/activity.html', 'text!/shared/oae/macros/list.html'], function(listMacro, activityMacro) {
                 // Translate and cache the macros. We require the i18n API here to avoid creating
                 // a cyclic dependency
                 var i18nAPI = require('oae.api.i18n');
@@ -174,12 +186,11 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
          *
          * 2) List item
          *
-         *   `${listItem(entityData, [pagingKey], [metadata], [showCheckbox])}`
+         *   `${listItem(entityData, [metadata], [showCheckbox])}`
          *
          * - `entityData` is an object representing a user, group or content item or a search result for a user, group
          *    or content item
          * - `metadata` (optional) is a line of metadata information that should be displayed underneath the entity name
-         * - `pagingKey` (optional) is the key that should be used for paging through the infinite scroll plugin
          * - `showCheckbox` (optional) will determine whether ot not the checkbox should be shown. By default, the checkbox will be shown to all logged in users
          *
          * 3) Activity summary
@@ -327,6 +338,21 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
          * @api private
          */
         var init = function() {
+            // Don't allow the field to have more than 1000 characters
+            $.validator.addMethod('maxlength-short', function(value, element) {
+                return $.trim(value.length) <= 1000;
+            });
+
+            // Don't allow the field to have more than 10000 characters
+            $.validator.addMethod('maxlength-medium', function(value, element) {
+                return $.trim(value.length) <= 10000;
+            });
+
+            // Don't allow the field to have more than 100000 characters
+            $.validator.addMethod('maxlength-long', function(value, element) {
+                return $.trim(value.length) <= 100000;
+            });
+
             // Don't allow spaces in the field
             $.validator.addMethod('nospaces', function(value, element) {
                 return this.optional(element) || (value.indexOf(' ') === -1);
@@ -382,7 +408,7 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
          *
          * All other validation configuration should be passed into the options object when calling `oae.api.util.validation().validate($form, options)`.
          *
-         * Sakai OAE defines to additional validation methods:
+         * OAE defines the additional validation methods:
          *
          * - `nospaces`: Makes the element require no spaces.
          * - `prependhttp`: Prepends http:// to a URL field if no protocal has been specified.
@@ -564,7 +590,7 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
             showCallback = options.onShown;
             options.onShown = function() {
                 showCallback(this.$tip);
-            }
+            };
         }
 
         // Set the HTML of the content element as the content of the clickover
@@ -575,6 +601,10 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
 
         // Show the clickover
         $trigger.trigger('click');
+        // Remove the `popover-title` element that is automatically generated by Bootstrap. When empty,
+        // this will cause an accessibility issue. As this is an h3 element, it can also cause the header
+        // flow to be incorrect
+        $('.popover-title').remove();
     };
 
     /////////////////
@@ -633,7 +663,7 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
         var getAutosuggestTemplates = function(callback) {
             if (!$autosuggestTemplates) {
                 // Load the autosuggest templates through the RequireJS Text plugin
-                require(['text!/ui/macros/autosuggest.html'], function(autosuggestTemplates) {
+                require(['text!/shared/oae/macros/autosuggest.html'], function(autosuggestTemplates) {
                     // Translate the template. We require the i18n API here to avoid creating a cyclic dependency
                     autosuggestTemplates = require('oae.api.i18n').translate(autosuggestTemplates);
                     $autosuggestTemplates = $('<div>').append(autosuggestTemplates);
@@ -714,6 +744,8 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
                 $.each(resourceTypes, function(index, resourceType) {
                     options.extraParams += '&resourceTypes=' + resourceType;
                 });
+                // Add the parameter that specifies whether or not results from other tenants need to be included as well
+                options.extraParams += '&includeExternal=' + (!configAPI.getValue('oae-tenants', 'tenantprivacy', 'tenantprivate'));
 
                 // By default, the autosuggest component will only show results in the suggested items that actually match the query
                 // on one of the fields specified in the `searchObjProps` parameter. However, as we rely on the REST endpoint to do
@@ -763,7 +795,7 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
                 if (!options.formatList) {
                     options.formatList = function(data, elem) {
                         return elem.html(template().render($('#autosuggest-suggested-template', $autosuggestTemplates), {'data': data}));
-                    }
+                    };
                 }
 
                 // Function that will be called when an item is attempted to be removed from the autosuggest
@@ -872,10 +904,13 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
                     });
                 }
 
+                // Add a label to the autosuggest input field for accessibility
+                $('.as-input', $list).before('<label class="oae-aural-text" for="' + $('.as-input', $list).attr('id') + '">' + options.startText + '</label>');
+
                 // Trigger the callback function
                 if (_.isFunction(callback)) {
                     callback();
-                };
+                }
             });
         };
 
@@ -888,11 +923,11 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
          */
         var focus = function($element) {
             if (!$element) {
-                throw new Error('An valid input element should be provided.');
+                throw new Error('A valid input element should be provided');
             }
 
             $element = $($element);
-            $('.as-selections input', $element).focus();
+            $('.as-selections input.as-input', $element).focus();
         };
 
         /**
@@ -947,6 +982,7 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
             'getSelection': getSelection
         };
     };
+
 
     ////////////////////
     // MATH RENDERING //
@@ -1050,11 +1086,19 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
         };
 
         /**
+         * Redirect the currently user to the me page.
+         */
+        var me = function() {
+            window.location = '/me';
+        };
+
+        /**
          * Redirect the current user to the 401 page. This can be used when the current user does not have
-         * permission to see a certain page.
+         * permission to see a certain page. We encode the current URL into the querystring to make sure that
+         * the user can be redirected here when signing in.
          */
         var accessdenied = function() {
-            window.location = '/accessdenied';
+            window.location = '/accessdenied?url=' + $.url().attr('path');
         };
 
         /**
@@ -1083,6 +1127,7 @@ define(['exports', 'require', 'jquery', 'underscore', 'jquery.validate', 'trimpa
 
         return {
             'login': login,
+            'me': me,
             'accessdenied': accessdenied,
             'notfound': notfound,
             'unavailable': unavailable,

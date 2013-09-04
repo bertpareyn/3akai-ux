@@ -1,10 +1,10 @@
 /*!
- * Copyright 2013 Sakai Foundation (SF) Licensed under the
+ * Copyright 2013 Apereo Foundation (AF) Licensed under the
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
  *
- *     http://www.osedu.org/licenses/ECL-2.0
+ *     http://opensource.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an "AS IS"
@@ -64,7 +64,10 @@ require(['jquery', 'underscore', 'oae.core'], function($, _, oae) {
      */
     var setUpClips = function() {
         oae.api.util.template().render($('#content-clip-template'), {'content': contentProfile}, $('#content-clip-container'));
-        oae.api.util.template().render($('#content-actions-clip-template'), {'content': contentProfile}, $('#content-actions-clip-container'));
+        // Only show the actions to logged in users
+        if (!oae.data.me.anon) {
+            oae.api.util.template().render($('#content-actions-clip-template'), {'content': contentProfile}, $('#content-actions-clip-container'));
+        }
     };
 
     /**
@@ -220,15 +223,11 @@ require(['jquery', 'underscore', 'oae.core'], function($, _, oae) {
     // REVISIONS //
     ///////////////
 
-    $(document).on('oae.revisions.done', function(ev, data) {
-        // Update the content profile
-        contentProfile.downloadPath = '/api/content/' + contentProfile.id + '/download/' + data.revisionId;
-        contentProfile.previews.mediumUrl = data.mediumUrl;
-        contentProfile.previews.thumbnailUrl = data.thumbnailUrl;
-
+    $(document).on('oae.revisions.done', function(ev, restoredRevision, updatedContentProfile) {
+        contentProfile = updatedContentProfile;
         // Refresh the preview and clip
         setUpContentPreview();
-        setUpClip();
+        setUpClips();
     });
 
 

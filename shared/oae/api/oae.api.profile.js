@@ -1,10 +1,10 @@
 /*!
- * Copyright 2013 Sakai Foundation (SF) Licensed under the
+ * Copyright 2013 Apereo Foundation (AF) Licensed under the
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
  *
- *     http://www.osedu.org/licenses/ECL-2.0
+ *     http://opensource.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an "AS IS"
@@ -86,6 +86,9 @@ define(['exports'], function(exports) {
             throw new Error('Section data should be provided');
         }
 
+        // Set a default callback function in case no callback function has been provided
+        callback = callback || function() {};
+
         // Get the current user to construct the endpoint url.
         var userId = require('oae.core').data.me.id;
 
@@ -124,6 +127,9 @@ define(['exports'], function(exports) {
         if (!sectionId) {
             throw new Error('A section id should be provided.');
         }
+
+        // Set a default callback function in case no callback function has been provided
+        callback = callback || function() {};
 
         // Get the current user to construct the endpoint url.
         var userId = require('oae.core').data.me.id;

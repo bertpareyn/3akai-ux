@@ -1,10 +1,10 @@
 /*!
- * Copyright 2013 Sakai Foundation (SF) Licensed under the
+ * Copyright 2013 Apereo Foundation (AF) Licensed under the
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
  *
- *     http://www.osedu.org/licenses/ECL-2.0
+ *     http://opensource.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an "AS IS"
@@ -141,14 +141,22 @@ require(['jquery','oae.core'], function($, oae) {
     });
     $(document).trigger('oae.context.send', oae.data.me);
 
+
+    //////////////////
+    // EDIT PROFILE //
+    //////////////////
+
     /**
-     * Re-render the me clip when a new profile picture has been uploaded. The updated
+     * Re-render the me clip when the user profile has been updated. The updated
      * me object will be passed into the event
+     *
+     * TODO: verify this works when https://github.com/oaeproject/Hilary/issues/538 is merged.
      */
-    $(document).on('oae.changepic.finished', function(ev, data) {
+    $(document).on('oae.editprofile.done', function(ev, data) {
         oae.data.me = data;
         setUpClip();
     });
+
 
     setUpClip();
     setUpNavigation();

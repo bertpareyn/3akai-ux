@@ -1,10 +1,10 @@
 /*!
- * Copyright 2013 Sakai Foundation (SF) Licensed under the
+ * Copyright 2013 Apereo Foundation (AF) Licensed under the
  * Educational Community License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License. You may
  * obtain a copy of the License at
  *
- *     http://www.osedu.org/licenses/ECL-2.0
+ *     http://opensource.org/licenses/ECL-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an "AS IS"
@@ -51,11 +51,13 @@ requirejs.config({
 
         // OAE paths
         'bootstrap.modal': 'oae/js/bootstrap-plugins/bootstrap.modal',
+        'jquery.browse-focus': 'oae/js/jquery-plugins/jquery.browse-focus',
         'jquery.clip': 'oae/js/jquery-plugins/jquery.clip',
         'jquery.dnd-upload': 'oae/js/jquery-plugins/jquery.dnd-upload',
         'jquery.infinitescroll': 'oae/js/jquery-plugins/jquery.infinitescroll',
         'jquery.jeditable-focus': 'oae/js/jquery-plugins/jquery.jeditable-focus',
         'jquery.list-options': 'oae/js/jquery-plugins/jquery.list-options',
+        'jquery.update-picture': 'oae/js/jquery-plugins/jquery.update-picture',
 
         // OAE API modules
         'oae.api': 'oae/api/oae.api',
@@ -71,18 +73,32 @@ requirejs.config({
         'oae.api.user': 'oae/api/oae.api.user',
         'oae.api.util': 'oae/api/oae.api.util',
         'oae.api.widget': 'oae/api/oae.api.widget',
+        'oae.bootstrap': 'oae/api/oae.bootstrap',
         'oae.core': 'oae/api/oae.core',
-        'pluginBuilder': 'oae/pluginBuilder'
+        'pluginBuilder': 'oae/pluginBuilder',
+        'qunitjs': '/tests/qunit/js/qunit'
     },
     'priority': ['jquery', 'underscore'],
     'shim': {
         'bootstrap.clickover': {
             'deps': ['bootstrap']
         }
-    }
+    },
+    'waitSeconds': 30
 });
 
 /*!
- * Load all of the dependencies and core OAE APIs
+ * Load all of the dependencies, core OAE APIs, and the page-specific javascript file (if specified)
  */
-require(['oae.core']);
+require(['oae.core'], function() {
+    // Find the script that has specified both the data-main (which loaded this bootstrap script) and a data-loadmodule attribute. The
+    // data-loadmodule attribute tells us which script they wish to load *after* the core APIs have been properly bootstrapped.
+    var $mainScript = $('script[data-main][data-loadmodule]');
+    if ($mainScript.length > 0) {
+        var loadModule = $mainScript.attr('data-loadmodule');
+        if (loadModule) {
+            // Require the module they specified in the data-loadmodule attribute
+            require([loadModule]);
+        }
+    }
+});
