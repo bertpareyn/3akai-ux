@@ -357,6 +357,7 @@ define(['exports', 'jquery', 'underscore', 'oae.core', 'jquery.properties-parser
                 '/shared/oae/api/oae.api.profile.js': null,
                 '/shared/oae/api/oae.api.user.js': null,
                 '/shared/oae/api/oae.api.util.js': null,
+                '/shared/oae/api/oae.api.websockets.js': null,
                 '/shared/oae/api/oae.api.widget.js': null,
                 '/shared/oae/api/oae.bootstrap.js': null,
                 '/shared/oae/api/oae.core.js': null,
