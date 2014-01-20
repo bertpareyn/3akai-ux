@@ -70,7 +70,6 @@ define([
         'jquery.form',
         'jquery.infinitescroll',
         'jquery.parseurl',
-        'jquery.properties-parser',
         'jquery.serializeObject',
         'jquery.timeago',
         'jquery.validate',

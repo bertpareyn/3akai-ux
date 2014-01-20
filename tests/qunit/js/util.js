@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-define(['exports', 'jquery', 'underscore', 'oae.core', 'jquery.properties-parser'], function(exports, $, _, oae) {
+define(['exports', 'jquery', 'underscore', 'oae.core'], function(exports, $, _, oae) {
 
     // By default, QUnit runs tests when the load event is triggered on the window.
     // We're loading tests asynchronsly and therefore set this property to false, then call QUnit.start() once everything is loaded.
@@ -271,7 +271,7 @@ define(['exports', 'jquery', 'underscore', 'oae.core', 'jquery.properties-parser
                     var bundleName = splitPath.pop().split('.')[0];
 
                     if (bundle) {
-                        testData.widgetData[widgetName].i18n[bundleName] = $.parseProperties(bundle);
+                        testData.widgetData[widgetName].i18n[bundleName] = JSON.parse(bundle);
                     } else {
                         testData.widgetData[widgetName].i18n[bundleName] = {};
                     }
@@ -300,7 +300,11 @@ define(['exports', 'jquery', 'underscore', 'oae.core', 'jquery.properties-parser
 
         oae.api.util.staticBatch(paths, function(err, data) {
             $.each(data, function(bundleIndex, bundle) {
-                testData.mainBundles[bundleIndex] = $.parseProperties(bundle);
+                try {
+                    testData.mainBundles[bundleIndex] = JSON.parse(bundle);
+                } catch (err) {
+                    console.log(err, bundleIndex, bundle);
+                }
             });
             callback(testData);
         });
@@ -313,18 +317,18 @@ define(['exports', 'jquery', 'underscore', 'oae.core', 'jquery.properties-parser
         var testData = {
             'widgetData': oae.api.widget.getWidgetManifests(),
             'mainBundles': {
-                '/ui/bundles/ca_ES.properties': null,
-                '/ui/bundles/de_DE.properties': null,
-                '/ui/bundles/default.properties': null,
-                '/ui/bundles/es_ES.properties': null,
-                '/ui/bundles/fr_FR.properties': null,
-                '/ui/bundles/hi_IN.properties': null,
-                '/ui/bundles/it_IT.properties': null,
-                '/ui/bundles/nl_NL.properties': null,
-                '/ui/bundles/pl_PL.properties': null,
-                '/ui/bundles/ru_RU.properties': null,
-                '/ui/bundles/val_ES.properties': null,
-                '/ui/bundles/zh_CN.properties': null
+                '/ui/bundles/ca_ES.json': null,
+                '/ui/bundles/de_DE.json': null,
+                '/ui/bundles/default.json': null,
+                '/ui/bundles/es_ES.json': null,
+                '/ui/bundles/fr_FR.json': null,
+                '/ui/bundles/hi_IN.json': null,
+                '/ui/bundles/it_IT.json': null,
+                '/ui/bundles/nl_NL.json': null,
+                '/ui/bundles/pl_PL.json': null,
+                '/ui/bundles/ru_RU.json': null,
+                '/ui/bundles/val_ES.json': null,
+                '/ui/bundles/zh_CN.json': null
             },
             'mainHTML': {
                 '/shared/oae/errors/accessdenied.html': null,

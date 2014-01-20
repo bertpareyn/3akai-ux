@@ -38,7 +38,6 @@ requirejs.config({
         'jquery.jeditable': 'vendor/js/jquery-plugins/jquery.jeditable.oae-edited',
         'jquery.oembed': 'vendor/js/jquery-plugins/jquery.oembed',
         'jquery.parseurl': 'vendor/js/jquery-plugins/jquery.parseurl.oae-edited',
-        'jquery.properties-parser': 'vendor/js/jquery-plugins/jquery.properties-parser',
         'jquery.serializeObject': 'vendor/js/jquery-plugins/jquery.serializeObject',
         'jquery.spectrum': 'vendor/js/jquery-plugins/jquery.spectrum',
         'jquery.timeago': 'vendor/js/jquery-plugins/jquery.timeago',

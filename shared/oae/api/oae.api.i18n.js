@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-define(['exports', 'jquery', 'oae.api.config', 'oae.api.util', 'oae.api.l10n', 'jquery.properties-parser', 'jquery.timeago', 'jquery.validate'], function(exports, $, configAPI, utilAPI, l10nAPI) {
+define(['exports', 'jquery', 'oae.api.config', 'oae.api.util', 'oae.api.l10n', 'jquery.timeago', 'jquery.validate'], function(exports, $, configAPI, utilAPI, l10nAPI) {
 
     // Variable that will keep track of the current user's locale
     var locale = null;
@@ -74,16 +74,16 @@ define(['exports', 'jquery', 'oae.api.config', 'oae.api.util', 'oae.api.l10n', '
      * @api private
      */
     var loadCoreBundles = function(callback) {
-        var bundlesToLoad = ['/ui/bundles/default.properties', '/ui/bundles/' + locale + '.properties'];
+        var bundlesToLoad = ['/ui/bundles/default.json', '/ui/bundles/' + locale + '.json'];
         utilAPI.staticBatch(bundlesToLoad, function(err, data) {
             if (err) {
                 return callback(err);
             }
 
-            bundles.core['default'] = $.parseProperties(data[bundlesToLoad[0]]);
+            bundles.core['default'] = JSON.parse(data[bundlesToLoad[0]]);
             // Only parse the core bundle for the current user's language if it exists
             if (data[bundlesToLoad[1]]) {
-                bundles.core[locale] = $.parseProperties(data[bundlesToLoad[1]]);
+                bundles.core[locale] = JSON.parse(data[bundlesToLoad[1]]);
             }
             callback(null);
         });
@@ -100,9 +100,9 @@ define(['exports', 'jquery', 'oae.api.config', 'oae.api.util', 'oae.api.l10n', '
      */
     var parseWidgetBundles = exports.parseWidgetBundles = function(widgetName, defaultBundle, localeBundle) {
         bundles.widgets[widgetName] = {};
-        bundles.widgets[widgetName]['default'] = $.parseProperties(defaultBundle);
+        bundles.widgets[widgetName]['default'] = JSON.parse(defaultBundle);
         if (localeBundle) {
-            bundles.widgets[widgetName][locale] = $.parseProperties(localeBundle);
+            bundles.widgets[widgetName][locale] = JSON.parse(localeBundle);
         }
     };
 
