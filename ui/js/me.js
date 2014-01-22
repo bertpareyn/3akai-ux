@@ -122,6 +122,25 @@ require(['jquery','oae.core'], function($, oae) {
                     ]
                 }
             ]
+        },
+        {
+            'id': 'todo',
+            'title': oae.api.i18n.translate('__MSG__TO_DO__'),
+            'icon': 'icon-list-ol',
+            'layout': [
+                {
+                    'width': 'span12',
+                    'widgets': [
+                        {
+                            'id': 'todo',
+                            'settings': {
+                                'context': oae.data.me,
+                                'canManage': true
+                            }
+                        }
+                    ]
+                }
+            ]
         }
     ];
 
