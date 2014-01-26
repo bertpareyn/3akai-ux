@@ -945,11 +945,6 @@ div.oae-thumbnail i[class^="icon-"] {
     padding: 5px 25px;
 }
 
-.oae-lhnavigation.oae-lhnav-expanded + .oae-page {
-    min-width: 480px;
-    padding: 5px 25px 5px 220px;
-}
-
 /* iPhone resolution */
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
     .oae-page {
