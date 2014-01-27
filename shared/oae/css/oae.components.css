@@ -1095,6 +1095,7 @@ div.oae-thumbnail i[class^="icon-"] {
 }
 
 .oae-listitem.oae-listitem-compact > div:not(.oae-thumbnail) {
+    flex: 1;
     height: auto;
     -webkit-flex-direction: row;
        -moz-flex-direction: row;
