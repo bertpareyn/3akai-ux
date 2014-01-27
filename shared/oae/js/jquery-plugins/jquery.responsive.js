@@ -28,21 +28,13 @@ define(['jquery', 'oae.api.util'], function (jQuery, oaeUtil) {
      * Open the left hand navigation
      */
     var openLhNav = function() {
-        // First set the opacity and width to 0 before animating it
-        $('.oae-lhnavigation').css({
-            'opacity': 0,
-            'width': 0
-        });
-
-        // Remove the bootstrap responsive hidden classes to show the left hand
-        // navigation when animating on smaller screens
-        $('.oae-lhnavigation > ul').removeClass('hidden-xs hidden-sm');
 
         // Animate the opacity and width
-        $('.oae-lhnavigation').animate({
+        $('.oae-lhnavigation').addClass('oae-lhnav-expanded');
+        $('.oae-lhnavigation').css({
             'opacity': 1,
-            'width': LHNAVIGATION_WIDTH  + 'px'
-        }, 250);
+            'width': LHNAVIGATION_WIDTH + 'px'
+        });
 
         // We want the page to slide rather than squish, so freeze its width to the current size
         $('.oae-page').css({
@@ -50,10 +42,8 @@ define(['jquery', 'oae.api.util'], function (jQuery, oaeUtil) {
         });
 
         // Animate the margin of the page to the width of the left hand nav + some additional space
-        $('.oae-page').animate({
+        $('.oae-page').css({
             'margin-left': (LHNAVIGATION_WIDTH + 10) + 'px'
-        }, 250, function() {
-            $('.oae-lhnavigation').addClass('oae-lhnav-expanded');
         });
     };
 
@@ -61,22 +51,15 @@ define(['jquery', 'oae.api.util'], function (jQuery, oaeUtil) {
      * Close the left hand navigation
      */
     var closeLhNav = function() {
-        // Animate the width and opacity to 0
-        $('.oae-lhnavigation').animate({
+        // Transform the width and opacity of the navigation to close it
+        $('.oae-lhnavigation').css({
             'opacity': 0,
             'width': 0
-        }, 250);
+        });
 
-        // Animate the padding of the page to 25 pixels
-        $('.oae-page').animate({
-            'margin-left': '0px'
-        }, 250, function() {
-            // Add the bootstrap and OAE helper classes
-            $('.oae-lhnavigation > ul').addClass('hidden-xs hidden-sm');
-            $('.oae-lhnavigation').removeClass('oae-lhnav-expanded');
-
-            // Reset the page width back to 100%
-            $('.oae-page').css({'width': '100%'});
+        $('.oae-lhnavigation').removeClass('oae-lhnav-expanded');
+        $('.oae-page').css({
+            'margin-left': 0
         });
     };
 
@@ -96,11 +79,14 @@ define(['jquery', 'oae.api.util'], function (jQuery, oaeUtil) {
      * be toggled in small and extra small viewports.
      */
     $(document).on('click', '.oae-lhnavigation-toggle', function(ev) {
+        console.log('toggled');
         // If the left hand navigation is open, close it
         if ($('.oae-lhnavigation').hasClass('oae-lhnav-expanded')) {
+            console.log('was open');
             closeLhNav();
         // If the left hand navigation is closed, open it
         } else {
+            console.log('was closed');
             openLhNav();
         }
     });
