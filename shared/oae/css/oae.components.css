@@ -1138,6 +1138,7 @@ div.oae-thumbnail i[class^="icon-"] {
 }
 
 .oae-listitem.oae-listitem-compact {
+    display: flex;
     min-height: 27px;
 }
 
@@ -1157,6 +1158,8 @@ div.oae-thumbnail i[class^="icon-"] {
     height: 50px;
     width: 50px;
     margin-right: 15px;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 .oae-listitem.oae-listitem-compact .oae-thumbnail {
@@ -1177,7 +1180,8 @@ div.oae-thumbnail i[class^="icon-"] {
 }
 
 .oae-listitem.oae-listitem-compact > div:not(.oae-thumbnail) {
-    height: 25px;
+    flex: 1;
+    height: auto;
     -webkit-flex-direction: row;
        -moz-flex-direction: row;
         -ms-flex-direction: row;
@@ -1201,7 +1205,7 @@ div.oae-thumbnail i[class^="icon-"] {
     font-weight: 500;
     height: 25px;
     line-height: 25px;
-    margin: 0;
+    margin: auto 0;
 }
 
 .oae-listitem small {
@@ -1227,6 +1231,8 @@ div.oae-thumbnail i[class^="icon-"] {
 .oae-listitem .oae-listitem-actions {
     width: 100%;
     text-align: right;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 .oae-listitem .oae-listitem-actions i {
