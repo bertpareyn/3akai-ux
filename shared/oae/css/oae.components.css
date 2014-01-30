@@ -880,7 +880,9 @@ div.oae-thumbnail i[class^="icon-"] {
 .oae-lhnavigation {
     margin-left: 10px;
     margin-top: -5px;
+    overflow: hidden;
     position: absolute;
+    transition: opacity .5s ease, width .5s;
     width: 210px;
     z-index: 99;
 }
@@ -943,25 +945,30 @@ div.oae-thumbnail i[class^="icon-"] {
 .oae-page {
     min-width: 280px;
     padding: 5px 25px;
-}
-
-.oae-lhnavigation.oae-lhnav-expanded + .oae-page {
-    min-width: 480px;
-    padding: 5px 25px 5px 220px;
+    transition: margin-left .5s;
 }
 
 /* iPhone resolution */
-@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+@media (max-width : 992px) {
     .oae-page {
-        padding: 5px 10px 50px;
+        margin-left: 0;
+        padding: 5px 5px 50px;
+    }
+    .oae-lhnavigation {
+        opacity: 0;
+        width: 0px;
     }
 }
 
 @media (min-width: 992px) {
     .oae-page {
         padding: 5px 25px 5px 220px !important;
+
+        /* When the page is expanded while the lhnav is open, we should lose the oae-page left margin */
+        margin-left: 0 !important;
     }
     .oae-lhnavigation {
+        display: block !important;
         opacity: 1 !important;
         width: 210px !important;
     }
