@@ -947,12 +947,12 @@ div.oae-thumbnail i[class^="icon-"] {
 /* Page content */
 
 .oae-page {
-    min-width: 280px;
+    min-width: 200px;
     padding: 5px 25px;
 }
 
 .oae-lhnavigation.oae-lhnav-expanded + .oae-page {
-    min-width: 480px;
+    min-width: 400px;
     padding: 5px 25px 5px 220px;
 }
 
