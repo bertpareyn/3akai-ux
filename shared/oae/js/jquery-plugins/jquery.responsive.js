@@ -16,59 +16,38 @@
 /**
  * Utility plugin that handles the responsive left hand navigation interactions.
  *     - Ability to open and close the navigation using the `.oae-lhnavigation-toggle` class on desktop and mobile.
- *     - Toggling the visiblity of the navigation uses animation to fade-in/fade-out on desktop and mobile.
  *     - When a `page link` is clicked on a mobile device the navigation will close (does not apply on desktop). The navigation stays visible when an `action button` is clicked as this doesn't show a new page.
+ *     - Toggling the visiblity of the navigation uses css transitions to transition '.oae-lhnavigation' and '.oae-page' to their expanded state on desktop and mobile.
+ *     - '.oae-lhnav-collapsing' is set to enable css transitions on the elements. It is removed once the transitions have ended.
+ *     - '.oae-lhnav-expanded' is responsible for setting the required properties needed by '.oae-lhnavigation' and '.oae-page' to be shown in their expanded state.
  */
 
-define(['jquery', 'oae.api.util'], function (jQuery, oaeUtil) {
+define(['jquery', 'underscore', 'oae.api.util'], function (jQuery, _, oaeUtil) {
     (function($) {
-
-        var LHNAVIGATION_WIDTH = 210;
-        var LHNAVIGATION_PADDING = 25;
-
-        /**
-         * Open the left hand navigation
-         */
-        var openLhNav = function() {
-            // First set the opacity and width to 0 before animating it
-            $('.oae-lhnavigation').css({
-                'opacity': 0,
-                'width': 0
-            });
-            // Remove the bootstrap responsive hidden classes to show the left hand
-            // navigation when animating on smaller screens
-            $('.oae-lhnavigation > ul').removeClass('hidden-xs hidden-sm');
-            // Animate the opacity and width
-            $('.oae-lhnavigation').animate({
-                'opacity': 1,
-                'width': LHNAVIGATION_WIDTH  + 'px'
-            }, 250);
-            // Animate the padding of the page to 200px (width of the left hand nav) + 20 pixels (margin)
-            $('.oae-page').animate({
-                'padding-left': (LHNAVIGATION_WIDTH + 10) + 'px'
-            }, 250, function() {
-                $('.oae-lhnavigation').addClass('oae-lhnav-expanded');
-            });
-        };
+        // Time (in ms) it takes for the left hand nav opening/closing animation to finish.
+        var LHNAVIGATION_ANIMATION_TIME = 250;
 
         /**
-         * Close the left hand navigation
+         * Toggle the left hand navigation. Throttle the function to prevent it from being triggered during animation.
+         *
+         * @param  {Boolean}   showNav   True when the left hand navigation should be shown, false when the left hand navigation should be hidden.
          */
-        var closeLhNav = function() {
-            // Animate the width and opacity to 0
-            $('.oae-lhnavigation').animate({
-                'opacity': 0,
-                'width': 0
-            }, 250);
-            // Animate the padding of the page to 25 pixels
-            $('.oae-page').animate({
-                'padding-left': LHNAVIGATION_PADDING + 'px'
-            }, 250, function() {
-                // Add the bootstrap and OAE helper classes
-                $('.oae-lhnavigation > ul').addClass('hidden-xs hidden-sm');
-                $('.oae-lhnavigation').removeClass('oae-lhnav-expanded');
-            });
-        };
+        var toggleLhNav = _.throttle(function(showNav) {
+            var $lhNav = $('.oae-lhnavigation').addClass('oae-lhnav-collapsing').toggleClass('oae-lhnav-expanded', showNav);
+            if (showNav) {
+                // Remove the bootstrap responsive hidden classes to show the left hand
+                // navigation when animating on smaller screens
+                $lhNav.children('ul').removeClass('hidden-xs hidden-sm');
+            }
+
+            setTimeout(function() {
+                $lhNav.removeClass('oae-lhnav-collapsing');
+                if (!showNav) {
+                    // Add the bootstrap and OAE helper classes once the closing animation is finished
+                    $lhNav.children('ul').addClass('hidden-xs hidden-sm');
+                }
+            }, LHNAVIGATION_ANIMATION_TIME);
+        }, LHNAVIGATION_ANIMATION_TIME + 20);
 
         /**
          * Close the left hand navigation using animation when clicking a navigation link on a handheld device.
@@ -77,7 +56,7 @@ define(['jquery', 'oae.api.util'], function (jQuery, oaeUtil) {
          */
         $(document).on('click', '.oae-lhnavigation > ul > li:not(.oae-lhnavigation-action)', function() {
             if (oaeUtil.isHandheldDevice()) {
-                closeLhNav();
+                toggleLhNav(false);
             }
         });
 
@@ -86,13 +65,8 @@ define(['jquery', 'oae.api.util'], function (jQuery, oaeUtil) {
          * be toggled in small and extra small viewports.
          */
         $(document).on('click', '.oae-lhnavigation-toggle', function(ev) {
-            // If the left hand navigation is open, close it
-            if ($('.oae-lhnavigation').hasClass('oae-lhnav-expanded')) {
-                closeLhNav();
-            // If the left hand navigation is closed, open it
-            } else {
-                openLhNav();
-            }
+            // Open the left hand navigation if it's closed, otherwise close it.
+            toggleLhNav(!$('.oae-lhnavigation').hasClass('oae-lhnav-expanded'));
         });
 
     })(jQuery);
