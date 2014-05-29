@@ -38,7 +38,8 @@
     "properties-parser": "latest",
     "readdirp": "latest",
     "shelljs": "latest",
-    "underscore": "latest"
+    "underscore": "latest",
+    "tasklist": "git://github.com/oaeproject/oae-ui-tasklist.git"
   },
   "bundleDependencies": [
     "oae-core"

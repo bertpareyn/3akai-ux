@@ -162,6 +162,26 @@ require(['jquery','oae.core'], function($, oae) {
                     ]
                 }
             ]
+        },
+        {
+            'id': 'tasklist',
+            'title': oae.api.i18n.translate('__MSG__MY_TASKLIST__'),
+            'icon': 'icon-check',
+            'closeNav': true,
+            'layout': [
+                {
+                    'width': 'col-md-12',
+                    'widgets': [
+                        {
+                            'name': 'tasklist',
+                            'settings': {
+                                'context': oae.data.me,
+                                'canManage': true
+                            }
+                        }
+                    ]
+                }
+            ]
         }
     ];
 
