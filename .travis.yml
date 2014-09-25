@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "0.10"
+  - 0.10
 
 branches:
   only:
@@ -22,20 +22,21 @@ before_install:
   - sudo apt-get update
 
   # Install cassandra 1.2 manually
-  - sudo apt-get install -y -o Dpkg::Options::=--force-confnew cassandra=1.2.15
+  - sudo apt-get install -y -o Dpkg::Options::=--force-confnew cassandra=1.2.16
   - sudo sed -i 's/-Xss180k/-Xss256k/g' /etc/cassandra/cassandra-env.sh
   - sudo sh -c "echo 'JVM_OPTS=\"\${JVM_OPTS} -Djava.net.preferIPv4Stack=false\"' >> /etc/cassandra/cassandra-env.sh"
   - sudo service cassandra stop
+  - sudo service cassandra status
   - sudo service cassandra start
   - sudo service cassandra status
+
+  # Install nginx
+  - sudo apt-get install nginx
 
   # Turn off unneeded services to free some memory
   - sudo service mysql stop
   - sudo service memcached stop
   - sudo service postgresql stop
-
-  # Install nginx
-  - sudo apt-get install nginx
 
   # Install Hilary deps
   - sudo apt-get install -qq graphicsmagick libreoffice pdftk chrpath pdf2htmlex
@@ -48,6 +49,14 @@ before_install:
   - casperjs --version
   - phantomjs --version
 
+  # Install Hilary
+  - cd ~/build/CUL-DigitalServices
+  - git clone  --branch master --depth=1 git://github.com/CUL-DigitalServices/avocet-hilary.git ./avocet-hilary
+  - cd ./avocet-hilary
+  - npm install --production
+  - sudo service cassandra status
+  - node app.js | node_modules/.bin/bunyan -l error &
+
   # Configure avocet-ui / nginx
   - cd ~/build/CUL-DigitalServices/avocet-ui
   - npm install
@@ -57,16 +66,7 @@ before_install:
   - sudo mkdir /usr/share/nginx/logs
   - sudo service nginx start
 
-  # Install Hilary
-  - cd ~/build/CUL-DigitalServices
-  - git clone  --branch master --depth=1 git://github.com/CUL-DigitalServices/avocet-hilary.git ./avocet-hilary
-  - cd ./avocet-hilary
-  - npm install
-  - sudo service cassandra status
-  - node app.js | node_modules/.bin/bunyan &
-
   # Wait for Hilary to have started up to start the tests in "script" phase
-  - cd ~/build/CUL-DigitalServices/avocet-ui
   - ./tools/travis/checkHilaryStart.sh
 
 addons:
