@@ -66,6 +66,7 @@ before_install:
   - node app.js | node_modules/.bin/bunyan &
 
   # Wait for Hilary to have started up to start the tests in "script" phase
+  - cd ~/build/CUL-DigitalServices/avocet-ui
   - ./tools/travis/checkHilaryStart.sh
 
 addons:
