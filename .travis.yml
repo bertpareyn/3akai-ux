@@ -62,6 +62,7 @@ before_install:
   - git clone  --branch master --depth=1 git://github.com/CUL-DigitalServices/avocet-hilary.git ./avocet-hilary
   - cd ./avocet-hilary
   - npm install
+  - sudo service cassandra status
   - node app.js | node_modules/.bin/bunyan &
 
   # Wait for Hilary to have started up to start the tests in "script" phase
