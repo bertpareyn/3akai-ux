@@ -53,6 +53,7 @@ before_install:
   - git clone  --branch master --depth=1 git://github.com/CUL-DigitalServices/avocet-hilary.git ./avocet-hilary
   - cd ./avocet-hilary
   - npm install
+  - sleep 60
   - node app.js | node_modules/.bin/bunyan &
 
   # Configure avocet-ui / nginx
