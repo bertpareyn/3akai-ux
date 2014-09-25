@@ -48,13 +48,6 @@ before_install:
   - casperjs --version
   - phantomjs --version
 
-  # Install Hilary
-  - cd ~/build/CUL-DigitalServices
-  - git clone  --branch master --depth=1 git://github.com/CUL-DigitalServices/avocet-hilary.git ./avocet-hilary
-  - cd ./avocet-hilary
-  - npm install
-  - node app.js | node_modules/.bin/bunyan &
-
   # Configure avocet-ui / nginx
   - cd ~/build/CUL-DigitalServices/avocet-ui
   - npm install
@@ -63,6 +56,13 @@ before_install:
   - sudo cp ./target/optimized/nginx/nginx.conf /etc/nginx/nginx.conf
   - sudo mkdir /usr/share/nginx/logs
   - sudo service nginx start
+
+  # Install Hilary
+  - cd ~/build/CUL-DigitalServices
+  - git clone  --branch master --depth=1 git://github.com/CUL-DigitalServices/avocet-hilary.git ./avocet-hilary
+  - cd ./avocet-hilary
+  - npm install
+  - node app.js | node_modules/.bin/bunyan &
 
   # Wait for Hilary to have started up to start the tests in "script" phase
   - ./tools/travis/checkHilaryStart.sh
