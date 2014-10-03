@@ -52,7 +52,7 @@ casper.test.begin('Prepare environment for tests', function(test) {
 
             casper.then(function() {
                 adminUtil().createTenant(configUtil().tenantAlias, configUtil().tenantDisplayname, configUtil().tenantHost, function() {
-                    casper.wait(configUtil().modalWaitTime);
+                    casper.wait(5000);
                     adminUtil().writeConfig(configUtil().tenantAlias, {
                         'oae-principals/recaptcha/enabled': false,
                         'oae-principals/termsAndConditions/enabled': true,
